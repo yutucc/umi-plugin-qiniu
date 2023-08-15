@@ -14,17 +14,22 @@ export default (api: IApi) => {
     key: KEY,
     config: {
       schema(joi) {
-        return joi.string();
+        return joi.object();
       },
     },
     enableBy: api.EnableBy.config
   });
 
   api.onBuildComplete(async ({ err }) => {
-
+    if (err) {
+      api.logger.error('😞 构建失败！');
+      return;
+    }
+    api.logger.info('🤗 构建完成，即将开始把产物上传到七牛云OSS');
   });
 
   api.modifyConfig((initValue) => {
+    console.log('initValue :>> ', initValue);
     const { publicPath } = initValue || {};
     if (api.userConfig[KEY].oss && (publicPath === '/' || publicPath === '')) {
         api.logger.warn(`❗️  请检查是否正确配置publicPath,未正确配置将导致HTML文件无法使用阿里云OSS文件`);
