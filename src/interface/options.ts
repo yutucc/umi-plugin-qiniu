@@ -9,3 +9,8 @@ export interface UmiPluginOptions {
   projectPath?: string;// 项目文件夹地址
   exclude?: RegExp; // 排除的文件
 }
+
+export interface UmiPluginQiniuOptions {
+  qiniu: any;
+  options: UmiPluginOptions;
+}
