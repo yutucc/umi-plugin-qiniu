@@ -22,6 +22,16 @@ export default (api: IApi) => {
     enableBy: api.EnableBy.config
   });
 
+  api.modifyConfig((initValue: any) => {
+    console.log('initValue :>> ', initValue);
+    const { publicPath } = initValue || {};
+    if (api.userConfig[KEY].oss && (publicPath === '/' || publicPath === '')) {
+        api.logger.warn(`❗️  请检查是否正确配置publicPath,未正确配置将导致HTML文件无法使用阿里云OSS文件`);
+        api.logger.warn(`❗️  配置示例：https://umi-test.oss-cn-hangzhou.aliyuncs.com/umi-test/`);
+    }
+    return initValue;
+  });
+
   api.onBuildComplete(async ({ err }: any) => {
     if (err) {
       api.logger.error('😞 构建失败！');
@@ -42,15 +52,13 @@ export default (api: IApi) => {
     } else {
       api.logger.info(`😁 待上传七牛云的文件总数：${files.length}`);
     }
-  });
 
-  api.modifyConfig((initValue: any) => {
-    console.log('initValue :>> ', initValue);
-    const { publicPath } = initValue || {};
-    if (api.userConfig[KEY].oss && (publicPath === '/' || publicPath === '')) {
-        api.logger.warn(`❗️  请检查是否正确配置publicPath,未正确配置将导致HTML文件无法使用阿里云OSS文件`);
-        api.logger.warn(`❗️  配置示例：https://umi-test.oss-cn-hangzhou.aliyuncs.com/umi-test/`);
+    try {
+      // const res: number = await uploadFiles(files, oss, options, api);
+      // api.logger.info(`🎉  全部文件上传成功，共耗时：${(res / 1000).toFixed(2)}s`);
+    } catch (error) {
+      api.logger.error('😞 上传阿里云OSS失败，请检查错误信息！');
+      api.logger.error(error);
     }
-    return initValue;
   });
 };
