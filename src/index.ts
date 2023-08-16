@@ -42,8 +42,8 @@ export default (api: IApi) => {
     const qiniuOptions = getQiniuOptions(api);
     const pluginOptions = getPluginOptions(api);
     
-    console.log('qiniuOptions :>> ', qiniuOptions);
-    console.log('pluginOptions :>> ', pluginOptions);
+    // console.log('qiniuOptions :>> ', qiniuOptions);
+    // console.log('pluginOptions :>> ', pluginOptions);
     api.logger.info('🤗 构建完成，即将开始把产物上传到七牛云');
 
     const files = readBuildFilesSync(api.paths.absOutputPath, api);
@@ -59,9 +59,9 @@ export default (api: IApi) => {
       // const res: number = await uploadFiles(files, oss, options, api);
       // api.logger.info(`🎉  全部文件上传成功，共耗时：${(res / 1000).toFixed(2)}s`);
 
-      upload(`test/${new Date().getTime()}.mp4`, '/Users/nicholas/Desktop/test-res/huoshanxiaoship.mp4');
+      upload(`test/${new Date().getTime()}.mp4`, '/Users/nicholas/Desktop/test-res/f474dbbb-0df4-4c5c-9718-6ffd601c5254.mp4', qiniuOptions);
     } catch (error) {
-      api.logger.error('😞 上传阿里云OSS失败，请检查错误信息！');
+      api.logger.error('😞 上传七牛云失败，请检查错误信息！');
       api.logger.error(error);
     }
   });
