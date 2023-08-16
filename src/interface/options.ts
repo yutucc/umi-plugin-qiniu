@@ -4,6 +4,19 @@
  * @LastEditors: wuqinfa
  * @Description: 
  */
+
+// 七牛云参数的配置有点乱，文档里也没有找到明确的定义，自己按需再封装一层
+export interface QiniuAuth {
+  accessKey: string;
+  secretKey: string;
+  bucket: string // 七牛 空间名称
+
+  directory?: string // 指定目录
+}
+export interface QiniuOptions extends QiniuAuth {
+  aaa?: string;
+}
+
 export interface UmiPluginOptions {
   ignoreHtml?: boolean; // 不上传html
   projectPath?: string;// 项目文件夹地址
@@ -11,6 +24,6 @@ export interface UmiPluginOptions {
 }
 
 export interface UmiPluginQiniuOptions {
-  qiniu: any;
+  qiniu: QiniuOptions;
   options: UmiPluginOptions;
 }

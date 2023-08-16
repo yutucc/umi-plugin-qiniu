@@ -8,6 +8,7 @@ import type { IApi } from 'umi';
 
 import { KEY, } from './interface/const';
 import { getQiniuOptions, getPluginOptions } from './utils/options';
+import { upload } from './utils/upload';
 import { filterFile, readBuildFilesSync, } from './utils';
 
 export default (api: IApi) => {
@@ -46,6 +47,7 @@ export default (api: IApi) => {
     api.logger.info('🤗 构建完成，即将开始把产物上传到七牛云');
 
     const files = readBuildFilesSync(api.paths.absOutputPath, api);
+    console.log('files :>> ', files);
 
     if (files.length === 0) {
       api.logger.warn('😔 没有需要上传到七牛云的文件');
@@ -56,6 +58,8 @@ export default (api: IApi) => {
     try {
       // const res: number = await uploadFiles(files, oss, options, api);
       // api.logger.info(`🎉  全部文件上传成功，共耗时：${(res / 1000).toFixed(2)}s`);
+
+      upload(`test/${new Date().getTime()}.mp4`, '/Users/nicholas/Desktop/test-res/huoshanxiaoship.mp4');
     } catch (error) {
       api.logger.error('😞 上传阿里云OSS失败，请检查错误信息！');
       api.logger.error(error);

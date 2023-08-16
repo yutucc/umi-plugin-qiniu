@@ -15,8 +15,11 @@ import { KEY } from '../interface/const';
 // 默认配置
 const defaultConfigOptions: UmiPluginQiniuOptions = {
   qiniu: {
-    accessKeyId: '',
-    accessKeySecret: '',
+    accessKey: '',
+    secretKey: '',
+    bucket: '',
+
+    directory: '',
   },
   options: {
     projectPath: '',
