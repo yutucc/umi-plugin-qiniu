@@ -59,10 +59,29 @@ export default (api: IApi) => {
       // 这样做的目的是为了解决： https://github.com/umijs/father/issues/591
       const ora = await import('ora');
 
-      // if (decide(pluginOptions.archive, 'trigger')) {
-      //   const res = await zip(api.paths.absOutputPath, './', 'code-cpp');
-      //   console.log('res :>> ', res);
-      // }
+      if (decide(pluginOptions.archive, 'trigger')) {
+        const {
+          // @ts-ignore
+          fileName,
+          // @ts-ignore
+          output,
+        } = pluginOptions.archive;
+
+        const res = await zip(api.paths.absOutputPath, output, fileName);
+        const key = qiniuOptions.directory ? `${qiniuOptions.directory}/${fileName}.zip` : `${fileName}.zip`;
+
+        const spinner = ora.default(`上传 ${fileName}: 0%`).start();
+
+        await upload(key, res as string, qiniuOptions, (percent: string) => {
+          const temp = Number(percent) * 100;
+          
+          spinner.text = `上传 ${fileName}.zip: ${temp}%`;
+        });
+
+        spinner.succeed(`${fileName}.zip 上传成功`);
+
+        return;
+      }
 
       const promises =files.map((item: string) => {
         const file = item.split('/dist/')[1];
