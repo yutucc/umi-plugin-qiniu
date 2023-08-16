@@ -16,7 +16,14 @@ export interface QiniuOptions extends QiniuAuth {
   directory?: string // 指定目录
 }
 
+interface Archive {
+  trigger: boolean; // true: 触发  false：不触发
+  fileName: string; // 输出的文件名
+  output?: string; // 输出的路径
+}
+
 export interface UmiPluginOptions {
+  archive?: boolean | Archive; // 将构建产出的目录压缩打包后上传整个压缩包
   ignoreHtml?: boolean; // 不上传html
   projectPath?: string;// 项目文件夹地址
   exclude?: RegExp; // 排除的文件
