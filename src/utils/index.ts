@@ -7,6 +7,8 @@
 import type { IApi } from 'umi';
 
 import fs from 'fs';
+import path from 'path';
+import archiver from 'archiver';
 
 import { getPluginOptions } from './options';
 
@@ -55,4 +57,35 @@ export const readBuildFilesSync = (path: string, api: IApi): string[] => {
     }
   })
   return uploadFiles;
+}
+
+export const zip = (target: string, output: string, fileName: string) => {
+  return new Promise((resolve, reject) => {
+    const targetPath = path.resolve(target);
+    const outputPath = path.resolve(output);
+
+    const outputStream = fs.createWriteStream(`${outputPath}/${fileName}.zip`);
+    const archive = archiver('zip', {
+        zlib: { level: 9 }
+    });
+
+    outputStream.on('close', () => {
+      resolve(`${outputPath}/${fileName}.zip`);
+    });
+
+    archive.on('warning', err => {
+      if (err.code === 'ENOENT') {
+        console.log('zip warning', err);
+      } else {
+        reject(err);
+      }
+    });
+    archive.on('error', err => {
+      reject(err);
+    });
+
+    archive.pipe(outputStream);
+    archive.directory(targetPath, false);
+    archive.finalize();
+  });
 }

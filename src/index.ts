@@ -9,7 +9,7 @@ import type { IApi } from 'umi';
 import { KEY, } from './interface/const';
 import { getQiniuOptions, getPluginOptions } from './utils/options';
 import { upload } from './utils/upload';
-import { filterFile, readBuildFilesSync, } from './utils';
+import { filterFile, readBuildFilesSync, zip, } from './utils';
 
 export default (api: IApi) => {
   // See https://umijs.org/docs/guides/plugins
@@ -44,7 +44,7 @@ export default (api: IApi) => {
     
     // console.log('qiniuOptions :>> ', qiniuOptions);
     // console.log('pluginOptions :>> ', pluginOptions);
-    api.logger.info('🤗 构建完成，即将开始把产物上传到七牛云');
+    api.logger.info('🤗 构建完成，即将开始把产物上传到七牛云', api.paths.absOutputPath);
 
     const files = readBuildFilesSync(api.paths.absOutputPath, api);
     console.log('files :>> ', files);
@@ -55,22 +55,25 @@ export default (api: IApi) => {
       api.logger.info(`😁 待上传七牛云的文件总数：${files.length}`);
     }
 
-    try {
-      // 这样做的目的是为了解决： https://github.com/umijs/father/issues/591
-      const ora = await import('ora');
+    const res = await zip(api.paths.absOutputPath, './', 'code-cpp');
+    console.log('res :>> ', res);
 
-      // const res: number = await uploadFiles(files, oss, options, api);
-      // api.logger.info(`🎉  全部文件上传成功，共耗时：${(res / 1000).toFixed(2)}s`);
+    // try {
+    //   // 这样做的目的是为了解决： https://github.com/umijs/father/issues/591
+    //   const ora = await import('ora');
 
-      const spinner = ora.default('上传').start()
-      await upload(`test/${new Date().getTime()}.mp4`, '/Users/nicholas/Desktop/test-res/f474dbbb-0df4-4c5c-9718-6ffd601c5254.mp4', qiniuOptions, (percent: string) => {
-        spinner.text = `进度：${Number(percent) * 100}%`;
-      });
+    //   // const res: number = await uploadFiles(files, oss, options, api);
+    //   // api.logger.info(`🎉  全部文件上传成功，共耗时：${(res / 1000).toFixed(2)}s`);
 
-      spinner.succeed('上传成功');
-    } catch (error) {
-      api.logger.error('😞 上传七牛云失败，请检查错误信息！');
-      api.logger.error(error);
-    }
+    //   const spinner = ora.default('上传').start()
+    //   await upload(`test/${new Date().getTime()}.mp4`, '/Users/nicholas/Desktop/test-res/f474dbbb-0df4-4c5c-9718-6ffd601c5254.mp4', qiniuOptions, (percent: string) => {
+    //     spinner.text = `进度：${Number(percent) * 100}%`;
+    //   });
+
+    //   spinner.succeed('上传成功');
+    // } catch (error) {
+    //   api.logger.error('😞 上传七牛云失败，请检查错误信息！');
+    //   api.logger.error(error);
+    // }
   });
 };
