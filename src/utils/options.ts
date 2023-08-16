@@ -20,6 +20,7 @@ const defaultConfigOptions: UmiPluginQiniuOptions = {
     bucket: '',
 
     directory: '',
+    domain: '',
   },
   options: {
     projectPath: '',

@@ -10,11 +10,10 @@ export interface QiniuAuth {
   accessKey: string;
   secretKey: string;
   bucket: string // 七牛 空间名称
-
-  directory?: string // 指定目录
 }
 export interface QiniuOptions extends QiniuAuth {
-  aaa?: string;
+  domain: string // 资源域名
+  directory?: string // 指定目录
 }
 
 export interface UmiPluginOptions {

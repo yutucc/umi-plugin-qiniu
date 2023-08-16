@@ -56,10 +56,18 @@ export default (api: IApi) => {
     }
 
     try {
+      // 这样做的目的是为了解决： https://github.com/umijs/father/issues/591
+      const ora = await import('ora');
+
       // const res: number = await uploadFiles(files, oss, options, api);
       // api.logger.info(`🎉  全部文件上传成功，共耗时：${(res / 1000).toFixed(2)}s`);
 
-      upload(`test/${new Date().getTime()}.mp4`, '/Users/nicholas/Desktop/test-res/f474dbbb-0df4-4c5c-9718-6ffd601c5254.mp4', qiniuOptions);
+      const spinner = ora.default('上传').start()
+      await upload(`test/${new Date().getTime()}.mp4`, '/Users/nicholas/Desktop/test-res/f474dbbb-0df4-4c5c-9718-6ffd601c5254.mp4', qiniuOptions, (percent: string) => {
+        spinner.text = `进度：${Number(percent) * 100}%`;
+      });
+
+      spinner.succeed('上传成功');
     } catch (error) {
       api.logger.error('😞 上传七牛云失败，请检查错误信息！');
       api.logger.error(error);

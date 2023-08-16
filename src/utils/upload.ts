@@ -24,43 +24,50 @@ const getUploadToken = (data: QiniuAuth) => {
   return uploadToken;
 };
 
-export const upload = (key: string, filePath: string, options: QiniuOptions) => {
+const formatDomain = (domain: string) => {
+  const last = domain.slice(-1);
+
+  return last === '/' ? domain : `${domain}/`;
+}
+
+export const upload = (key: string, filePath: string, options: QiniuOptions, onProgress: Function) => {
   const {
     accessKey,
     secretKey,
     bucket,
+    domain,
   } = options;
 
-  const config = new qiniu.conf.Config();
-  const resumeUploader = new qiniu.resume_up.ResumeUploader(config);
-  const putExtra = new qiniu.resume_up.PutExtra();
-  const uploadToken = getUploadToken({
-    accessKey,
-    secretKey,
-    bucket,
-  });
+  return new Promise((resolve, reject) => {
+    const config = new qiniu.conf.Config();
+    const resumeUploader = new qiniu.resume_up.ResumeUploader(config);
+    const putExtra = new qiniu.resume_up.PutExtra();
+    const uploadToken = getUploadToken({
+      accessKey,
+      secretKey,
+      bucket,
+    });
 
-  //分片上传可指定 version 字段，v2 表示分片上传 v2 , 可自定义分片大小，此处设为 6MB
-  putExtra.version = 'v2';
-  putExtra.partSize = 6 * 1024 * 1024;
+    //分片上传可指定 version 字段，v2 表示分片上传 v2 , 可自定义分片大小，此处设为 6MB
+    putExtra.version = 'v2';
+    putExtra.partSize = 6 * 1024 * 1024;
 
-  putExtra.progressCallback = (uploadBytes, totalBytes) => {
-    console.log('progress:' + uploadBytes + '(' + totalBytes + ')');
-  };
+    putExtra.progressCallback = (uploadBytes, totalBytes) => {
+      const percent = (uploadBytes / totalBytes);
+      
+      onProgress(percent.toFixed(4));
+    };
 
-  resumeUploader.putFile(uploadToken, key, filePath, putExtra, (respErr: any, respBody: any, respInfo: any) => {
-    // console.log('respErr :>> ', respErr);
-    console.log('respBody :>> ', respBody);
-    // console.log('respInfo :>> ', respInfo);
-    if (respErr) {
-      throw respErr;
-    }
+    resumeUploader.putFile(uploadToken, key, filePath, putExtra, (respErr: any, respBody: any, respInfo: any) => {
+      if (respErr) {
+        reject(respErr);
+      }
 
-    // if (respInfo.statusCode == 200) {
-    //   console.log(respBody);
-    // } else {
-    //   console.log(respInfo.statusCode);
-    //   console.log(respBody);
-    // }
+      if (respInfo.statusCode == 200 && respBody.key) {
+        resolve(`${formatDomain(domain)}${respBody.key}`);
+      } else {
+        reject(respInfo);
+      }
+    });
   });
 };
