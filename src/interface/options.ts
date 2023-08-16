@@ -13,7 +13,7 @@ export interface QiniuAuth {
 }
 export interface QiniuOptions extends QiniuAuth {
   domain: string // 资源域名
-  directory?: string // 指定目录
+  directory?: string // 上传到七牛云的目录
 }
 
 interface Archive {
@@ -24,6 +24,7 @@ interface Archive {
 
 export interface UmiPluginOptions {
   archive?: boolean | Archive; // 将构建产出的目录压缩打包后上传整个压缩包
+
   ignoreHtml?: boolean; // 不上传html
   projectPath?: string;// 项目文件夹地址
   exclude?: RegExp; // 排除的文件

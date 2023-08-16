@@ -59,6 +59,14 @@ export const readBuildFilesSync = (path: string, api: IApi): string[] => {
   return uploadFiles;
 }
 
+export const decide = (data: any, prop: string) => {
+  if (Object.prototype.toString.call(data) === '[object Object]') {
+    return !!data[prop];
+  } else {
+    return !!data;
+  }
+}
+
 export const zip = (target: string, output: string, fileName: string) => {
   return new Promise((resolve, reject) => {
     const targetPath = path.resolve(target);

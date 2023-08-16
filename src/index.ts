@@ -9,7 +9,7 @@ import type { IApi } from 'umi';
 import { KEY, } from './interface/const';
 import { getQiniuOptions, getPluginOptions } from './utils/options';
 import { upload } from './utils/upload';
-import { filterFile, readBuildFilesSync, zip, } from './utils';
+import { filterFile, readBuildFilesSync, zip, decide, } from './utils';
 
 export default (api: IApi) => {
   // See https://umijs.org/docs/guides/plugins
@@ -24,7 +24,7 @@ export default (api: IApi) => {
   });
 
   api.modifyConfig((initValue: any) => {
-    console.log('initValue :>> ', initValue);
+    // console.log('initValue :>> ', initValue);
     const { publicPath } = initValue || {};
     if (api.userConfig[KEY].oss && (publicPath === '/' || publicPath === '')) {
         api.logger.warn(`❗️  请检查是否正确配置publicPath,未正确配置将导致HTML文件无法使用阿里云OSS文件`);
@@ -42,9 +42,9 @@ export default (api: IApi) => {
     const qiniuOptions = getQiniuOptions(api);
     const pluginOptions = getPluginOptions(api);
     
-    // console.log('qiniuOptions :>> ', qiniuOptions);
-    // console.log('pluginOptions :>> ', pluginOptions);
-    api.logger.info('🤗 构建完成，即将开始把产物上传到七牛云', api.paths.absOutputPath);
+    console.log('qiniuOptions :>> ', qiniuOptions);
+    console.log('pluginOptions :>> ', pluginOptions);
+    api.logger.info('🤗 构建完成，即将开始把产物上传到七牛云');
 
     const files = readBuildFilesSync(api.paths.absOutputPath, api);
     console.log('files :>> ', files);
@@ -55,25 +55,41 @@ export default (api: IApi) => {
       api.logger.info(`😁 待上传七牛云的文件总数：${files.length}`);
     }
 
-    const res = await zip(api.paths.absOutputPath, './', 'code-cpp');
-    console.log('res :>> ', res);
+    try {
+      // 这样做的目的是为了解决： https://github.com/umijs/father/issues/591
+      const ora = await import('ora');
 
-    // try {
-    //   // 这样做的目的是为了解决： https://github.com/umijs/father/issues/591
-    //   const ora = await import('ora');
+      // if (decide(pluginOptions.archive, 'trigger')) {
+      //   const res = await zip(api.paths.absOutputPath, './', 'code-cpp');
+      //   console.log('res :>> ', res);
+      // }
 
-    //   // const res: number = await uploadFiles(files, oss, options, api);
-    //   // api.logger.info(`🎉  全部文件上传成功，共耗时：${(res / 1000).toFixed(2)}s`);
+      const promises =files.map((item: string) => {
+        const file = item.split('/dist/')[1];
+        const key = qiniuOptions.directory ? `${qiniuOptions.directory}/${file}` : file;
+        
+        const spinner = ora.default(`上传 ${file}: 0%`).start();
+        return upload(key, item, qiniuOptions, (percent: string) => {
+          const temp = Number(percent) * 100;
+          
+          if (temp >= 100) {
+            spinner.succeed(`${file} 上传成功`);
+          } else {
+            spinner.text = `上传 ${file}: ${temp}%`;
+          }
+        });
+      });
 
-    //   const spinner = ora.default('上传').start()
-    //   await upload(`test/${new Date().getTime()}.mp4`, '/Users/nicholas/Desktop/test-res/f474dbbb-0df4-4c5c-9718-6ffd601c5254.mp4', qiniuOptions, (percent: string) => {
-    //     spinner.text = `进度：${Number(percent) * 100}%`;
-    //   });
-
-    //   spinner.succeed('上传成功');
-    // } catch (error) {
-    //   api.logger.error('😞 上传七牛云失败，请检查错误信息！');
-    //   api.logger.error(error);
-    // }
+      Promise.all(promises)
+      .then(() => {
+        api.logger.info('🎉 全部文件上传成功');
+      })
+      .catch((err) => {
+        throw err;
+      });
+    } catch (error) {
+      api.logger.error('😞 上传七牛云失败，请检查错误信息！');
+      api.logger.error(error);
+    }
   });
 };
