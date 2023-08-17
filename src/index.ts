@@ -8,8 +8,8 @@ import type { IApi } from 'umi';
 
 import { KEY, } from './interface/const';
 import { getQiniuOptions, getPluginOptions } from './utils/options';
-import { upload } from './utils/upload';
 import upZip from './utils/upZip';
+import upFiles from './utils/upFiles';
 import { filterFile, readBuildFilesSync, zip, decide, } from './utils';
 
 export default (api: IApi) => {
@@ -62,29 +62,7 @@ export default (api: IApi) => {
         return;
       }
 
-      // const promises =files.map((item: string) => {
-      //   const file = item.split('/dist/')[1];
-      //   const key = qiniuOptions.directory ? `${qiniuOptions.directory}/${file}` : file;
-        
-      //   const spinner = ora.default(`上传 ${file}: 0%`).start();
-      //   return upload(key, item, qiniuOptions, (percent: string) => {
-      //     const temp = Number(percent) * 100;
-          
-      //     if (temp >= 100) {
-      //       spinner.succeed(`${file} 上传成功`);
-      //     } else {
-      //       spinner.text = `上传 ${file}: ${temp}%`;
-      //     }
-      //   });
-      // });
-
-      // Promise.all(promises)
-      // .then(() => {
-      //   api.logger.info('🎉 全部文件上传成功');
-      // })
-      // .catch((err) => {
-      //   throw err;
-      // });
+      upFiles(api, qiniuOptions, pluginOptions, files);
     } catch (error) {
       api.logger.error('😞 上传七牛云失败，请检查错误信息！');
       api.logger.error(error);
