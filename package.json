@@ -1,6 +1,6 @@
 {
   "name": "umi-plugin-qiniu",
-  "author": "wuqinfa <369724377@qq.com>",
+  "author": "yutucc",
   "version": "0.0.1",
   "main": "dist/cjs/index.js",
   "types": "dist/cjs/index.d.ts",
@@ -9,10 +9,6 @@
     "build": "father build"
   },
   "keywords": [],
-  "authors": {
-    "name": "wuqinfa <369724377@qq.com>",
-    "email": "369724377@qq.com"
-  },
   "license": "MIT",
   "files": [
     "dist"
