@@ -9,6 +9,7 @@ import type { IApi } from 'umi';
 import { KEY, } from './interface/const';
 import { getQiniuOptions, getPluginOptions } from './utils/options';
 import { upload } from './utils/upload';
+import upZip from './utils/upZip';
 import { filterFile, readBuildFilesSync, zip, decide, } from './utils';
 
 export default (api: IApi) => {
@@ -57,29 +58,10 @@ export default (api: IApi) => {
 
     try {
       // 这样做的目的是为了解决： https://github.com/umijs/father/issues/591
-      const ora = await import('ora');
+      // const ora = await import('ora');
 
       if (decide(pluginOptions.archive, 'trigger')) {
-        const {
-          // @ts-ignore
-          fileName,
-          // @ts-ignore
-          output,
-        } = pluginOptions.archive;
-
-        const res = await zip(api.paths.absOutputPath, output, fileName);
-        const key = qiniuOptions.directory ? `${qiniuOptions.directory}/${fileName}.zip` : `${fileName}.zip`;
-
-        const spinner = ora.default(`上传 ${fileName}: 0%`).start();
-
-        await upload(key, res as string, qiniuOptions, (percent: string) => {
-          const temp = Number(percent) * 100;
-          
-          spinner.text = `上传 ${fileName}.zip: ${temp}%`;
-        });
-
-        spinner.succeed(`${fileName}.zip 上传成功`);
-
+        upZip(api, qiniuOptions, pluginOptions);
         return;
       }
 
