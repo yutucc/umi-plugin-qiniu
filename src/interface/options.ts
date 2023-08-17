@@ -31,5 +31,5 @@ export interface UmiPluginOptions {
 
 export interface UmiPluginQiniuOptions {
   qiniu: QiniuOptions;
-  options: UmiPluginOptions;
+  options?: UmiPluginOptions;
 }

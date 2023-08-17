@@ -10,7 +10,7 @@ import { KEY, } from './interface/const';
 import { getQiniuOptions, getPluginOptions } from './utils/options';
 import upZip from './utils/upZip';
 import upFiles from './utils/upFiles';
-import { filterFile, readBuildFilesSync, } from './utils';
+import { readBuildFilesSync, } from './utils';
 
 export default (api: IApi) => {
   // See https://umijs.org/docs/guides/plugins
@@ -24,15 +24,21 @@ export default (api: IApi) => {
     enableBy: api.EnableBy.config
   });
 
-  api.modifyConfig((initValue: any) => {
-    // console.log('initValue :>> ', initValue);
-    const { publicPath } = initValue || {};
-    if (api.userConfig[KEY].oss && (publicPath === '/' || publicPath === '')) {
-        api.logger.warn(`❗️  请检查是否正确配置publicPath,未正确配置将导致HTML文件无法使用阿里云OSS文件`);
-        api.logger.warn(`❗️  配置示例：https://umi-test.oss-cn-hangzhou.aliyuncs.com/umi-test/`);
-    }
-    return initValue;
-  });
+  // api.modifyConfig((initValue: any) => {
+  //   // console.log('initValue :>> ', initValue);
+  //   const { publicPath } = initValue || {};
+  //   if (api.userConfig[KEY].oss && (publicPath === '/' || publicPath === '')) {
+  //       api.logger.warn(`❗️  请检查是否正确配置publicPath,未正确配置将导致HTML文件无法使用阿里云OSS文件`);
+  //       api.logger.warn(`❗️  配置示例：https://umi-test.oss-cn-hangzhou.aliyuncs.com/umi-test/`);
+  //   }
+  //   return initValue;
+  // });
+
+  // api.onCheckConfig(({ config, userConfig }) => {
+  //   console.log('config :>> ', config);
+  //   console.log('userConfig :>> ', userConfig);
+  //   return true;
+  // });
 
   api.onBuildComplete(async ({ err }: any) => {
     if (err) {
@@ -43,8 +49,6 @@ export default (api: IApi) => {
     const qiniuOptions = getQiniuOptions(api);
     const pluginOptions = getPluginOptions(api);
     
-    console.log('qiniuOptions :>> ', qiniuOptions);
-    console.log('pluginOptions :>> ', pluginOptions);
     api.logger.info('🤗 构建完成，即将开始把产物上传到七牛云');
 
     const files = readBuildFilesSync(api.paths.absOutputPath, api);
