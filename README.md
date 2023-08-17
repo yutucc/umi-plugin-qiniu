@@ -68,10 +68,10 @@ export default defineConfig({
 
 |  属性   |  说明  | 类型  | 默认值  | 必填  |
 |  :----:  | :----:  | :----:  | :----:  | :----:  |
-| outputPath  | umi 构建产物的输出目录名字 | string | - | 非必填 |
+| outputPath  | umi 构建产物的输出目录名字 | string | `dist` | 非必填 |
 | archive  | 是否需要将构建产出的目录压缩打包后上传整个压缩包 | Archive | - | 非必填 |
-| excludeHtml  | 不上传html | boolean | - | 非必填 |
-| exclude  | 排除的文件 | RegExp | - | 非必填 |
+| excludeHtml  | 不上传html | boolean | `false` | 非必填 |
+| exclude  | 排除的文件 | RegExp | `/.DS_Store/` | 非必填 |
 
 ```typescript
 interface Archive {
