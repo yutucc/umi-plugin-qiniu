@@ -10,7 +10,7 @@ import { KEY, } from './interface/const';
 import { getQiniuOptions, getPluginOptions } from './utils/options';
 import upZip from './utils/upZip';
 import upFiles from './utils/upFiles';
-import { filterFile, readBuildFilesSync, zip, decide, } from './utils';
+import { filterFile, readBuildFilesSync, } from './utils';
 
 export default (api: IApi) => {
   // See https://umijs.org/docs/guides/plugins
@@ -48,16 +48,14 @@ export default (api: IApi) => {
     api.logger.info('🤗 构建完成，即将开始把产物上传到七牛云');
 
     const files = readBuildFilesSync(api.paths.absOutputPath, api);
-    console.log('files :>> ', files);
 
     if (files.length === 0) {
       api.logger.warn('😔 没有需要上传到七牛云的文件');
-    } else {
-      api.logger.info(`😁 待上传七牛云的文件总数：${files.length}`);
+      return;
     }
 
     try {
-      if (decide(pluginOptions.archive, 'trigger')) {
+      if (pluginOptions.archive && pluginOptions.archive.trigger) {
         upZip(api, qiniuOptions, pluginOptions);
         return;
       }

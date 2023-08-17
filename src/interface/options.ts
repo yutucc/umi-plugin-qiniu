@@ -23,7 +23,7 @@ interface Archive {
 }
 
 export interface UmiPluginOptions {
-  archive?: boolean | Archive; // 将构建产出的目录压缩打包后上传整个压缩包
+  archive?: Archive; // 将构建产出的目录压缩打包后上传整个压缩包
 
   ignoreHtml?: boolean; // 不上传html
   projectPath?: string;// 项目文件夹地址
