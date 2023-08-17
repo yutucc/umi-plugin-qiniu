@@ -19,11 +19,11 @@ import { getPluginOptions } from './options';
  * @return {*}
  */
 export const filterFile = (filePath: string, api: IApi): boolean => {
-  let { exclude, ignoreHtml } = getPluginOptions(api);
+  let { exclude, excludeHtml } = getPluginOptions(api);
   // @ts-ignore
   let reg: RegExp[] = [exclude];
 
-  if (ignoreHtml) {
+  if (excludeHtml) {
     reg.push(/\/*.html/);
   }
   

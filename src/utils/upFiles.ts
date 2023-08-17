@@ -19,7 +19,7 @@ export default async (api: IApi, qiniuOptions: QiniuOptions, pluginOptions: UmiP
     const ora = await import('ora');
 
     const promises = files.map((item: string) => {
-      const file = item.split('/dist/')[1];
+      const file = item.split(`/${pluginOptions.outputPath}/`)[1];
       const key = qiniuOptions.directory ? `${qiniuOptions.directory}/${file}` : file;
       
       const spinner = ora.default(`上传 ${file}: 0%`).start();

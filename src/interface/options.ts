@@ -23,10 +23,9 @@ interface Archive {
 }
 
 export interface UmiPluginOptions {
+  outputPath?: string; // umi 构建产物的输出目录名字
   archive?: Archive; // 将构建产出的目录压缩打包后上传整个压缩包
-
-  ignoreHtml?: boolean; // 不上传html
-  projectPath?: string;// 项目文件夹地址
+  excludeHtml?: boolean; // 不上传html
   exclude?: RegExp; // 排除的文件
 }
 

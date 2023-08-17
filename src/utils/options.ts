@@ -23,9 +23,9 @@ const defaultConfigOptions: UmiPluginQiniuOptions = {
     domain: '',
   },
   options: {
-    projectPath: '',
-    ignoreHtml: true,// 不上传html
-    exclude: /.DS_Store/, // 排除文件
+    outputPath: 'dist',
+    excludeHtml: false,
+    exclude: /.DS_Store/,
   }
 };
 
