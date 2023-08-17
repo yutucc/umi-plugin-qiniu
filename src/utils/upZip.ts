@@ -6,6 +6,8 @@
  */
 import type { IApi } from 'umi';
 
+import fs from 'fs';
+
 import {
   QiniuOptions,
   UmiPluginOptions,
@@ -15,26 +17,36 @@ import { zip, } from './index';
 import { upload } from './upload';
 
 export default async (api: IApi, qiniuOptions: QiniuOptions, pluginOptions: UmiPluginOptions) => {
-  // 这样做的目的是为了解决： https://github.com/umijs/father/issues/591
-  const ora = await import('ora');
+  try {
+    // 这样做的目的是为了解决： https://github.com/umijs/father/issues/591
+    const ora = await import('ora');
 
-  const {
-    // @ts-ignore
-    fileName,
-    // @ts-ignore
-    output,
-  } = pluginOptions.archive;
+    const {
+      // @ts-ignore
+      fileName,
+      // @ts-ignore
+      output,
+    } = pluginOptions.archive;
 
-  const res = await zip(api.paths.absOutputPath, output, fileName);
-  const key = qiniuOptions.directory ? `${qiniuOptions.directory}/${fileName}.zip` : `${fileName}.zip`;
+    const res = await zip(api.paths.absOutputPath, output, fileName);
+    const key = qiniuOptions.directory ? `${qiniuOptions.directory}/${fileName}.zip` : `${fileName}.zip`;
 
-  const spinner = ora.default(`上传 ${fileName}: 0%`).start();
+    const spinner = ora.default(`上传 ${fileName}: 0%`).start();
 
-  await upload(key, res as string, qiniuOptions, (percent: string) => {
-    const temp = Number(percent) * 100;
-    
-    spinner.text = `上传 ${fileName}.zip: ${temp}%`;
-  });
+    await upload(key, res as string, qiniuOptions, (percent: string) => {
+      const temp = Number(percent) * 100;
+      
+      spinner.text = `上传 ${fileName}.zip: ${temp}%`;
+    });
 
-  spinner.succeed(`${fileName}.zip 上传成功`);
+    spinner.succeed(`${fileName}.zip 上传成功`);
+
+    fs.unlink(res as string, (err) => {
+      if (err) {
+        throw err;
+      }
+    });
+  } catch (error) {
+    throw error;
+  }
 }

@@ -57,37 +57,34 @@ export default (api: IApi) => {
     }
 
     try {
-      // 这样做的目的是为了解决： https://github.com/umijs/father/issues/591
-      // const ora = await import('ora');
-
       if (decide(pluginOptions.archive, 'trigger')) {
         upZip(api, qiniuOptions, pluginOptions);
         return;
       }
 
-      const promises =files.map((item: string) => {
-        const file = item.split('/dist/')[1];
-        const key = qiniuOptions.directory ? `${qiniuOptions.directory}/${file}` : file;
+      // const promises =files.map((item: string) => {
+      //   const file = item.split('/dist/')[1];
+      //   const key = qiniuOptions.directory ? `${qiniuOptions.directory}/${file}` : file;
         
-        const spinner = ora.default(`上传 ${file}: 0%`).start();
-        return upload(key, item, qiniuOptions, (percent: string) => {
-          const temp = Number(percent) * 100;
+      //   const spinner = ora.default(`上传 ${file}: 0%`).start();
+      //   return upload(key, item, qiniuOptions, (percent: string) => {
+      //     const temp = Number(percent) * 100;
           
-          if (temp >= 100) {
-            spinner.succeed(`${file} 上传成功`);
-          } else {
-            spinner.text = `上传 ${file}: ${temp}%`;
-          }
-        });
-      });
+      //     if (temp >= 100) {
+      //       spinner.succeed(`${file} 上传成功`);
+      //     } else {
+      //       spinner.text = `上传 ${file}: ${temp}%`;
+      //     }
+      //   });
+      // });
 
-      Promise.all(promises)
-      .then(() => {
-        api.logger.info('🎉 全部文件上传成功');
-      })
-      .catch((err) => {
-        throw err;
-      });
+      // Promise.all(promises)
+      // .then(() => {
+      //   api.logger.info('🎉 全部文件上传成功');
+      // })
+      // .catch((err) => {
+      //   throw err;
+      // });
     } catch (error) {
       api.logger.error('😞 上传七牛云失败，请检查错误信息！');
       api.logger.error(error);
