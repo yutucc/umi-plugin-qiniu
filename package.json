@@ -1,7 +1,7 @@
 {
   "name": "umi-plugin-qiniu",
   "author": "yutucc",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "dist/cjs/index.js",
   "types": "dist/cjs/index.d.ts",
   "scripts": {
@@ -19,6 +19,15 @@
     "umi plugin"
   ],
   "license": "MIT",
+  "publisher": "yutucc",
+  "homepage": "https://github.com/yutucc/umi-plugin-qiniu",
+  "bugs": {
+    "url": "https://github.com/yutucc/umi-plugin-qiniu/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yutucc/umi-plugin-qiniu"
+  },
   "files": [
     "dist"
   ],
