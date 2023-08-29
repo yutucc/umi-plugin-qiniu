@@ -1,7 +1,7 @@
 {
   "name": "umi-plugin-qiniu",
   "author": "yutucc",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "main": "dist/cjs/index.js",
   "types": "dist/cjs/index.d.ts",
   "scripts": {
@@ -34,13 +34,13 @@
   "devDependencies": {
     "@types/archiver": "^5.3.2",
     "@types/node": "^20.4.9",
-    "archiver": "^5.3.1",
     "father": "^4.3.1",
     "ora": "^7.0.1",
     "typescript": "^5.1.6",
     "umi": "^4.0.75"
   },
   "dependencies": {
+    "archiver": "^5.3.1",
     "qiniu": "^7.9.0"
   }
 }
