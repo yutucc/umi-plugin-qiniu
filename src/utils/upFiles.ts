@@ -36,7 +36,7 @@ export default async (api: IApi, qiniuOptions: QiniuOptions, pluginOptions: UmiP
 
     Promise.all(promises)
     .then(() => {
-      api.logger.info('🎉 全部文件上传成功');
+      api.logger.info(`🎉 全部文件上传成功${qiniuOptions.refreshUrl ? '，且已刷新所有文件的 CDN 链接：' : ''}`);
     })
     .catch((err) => {
       throw err;

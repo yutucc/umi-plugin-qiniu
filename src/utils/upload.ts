@@ -7,16 +7,9 @@
  */
 import qiniu from 'qiniu';
 
-import { QiniuAuth, QiniuOptions, } from '../interface/options';
+import { QiniuOptions, } from '../interface/options';
 
-const getUploadToken = (data: QiniuAuth, key: string) => {
-  const {
-    accessKey,
-    secretKey,
-    bucket,
-  } = data;
-
-  const mac = new qiniu.auth.digest.Mac(accessKey, secretKey);
+const getUploadToken = (mac: any, bucket: string, key: string) => {
   const putPolicy = new qiniu.rs.PutPolicy({
     scope: `${bucket}:${key}`, // 加上文件 key，表示上传时可以覆盖同名文件，详细规则见： https://developer.qiniu.com/kodo/1206/put-policy
   });
@@ -37,17 +30,16 @@ export const upload = (key: string, filePath: string, options: QiniuOptions, onP
     secretKey,
     bucket,
     domain,
+    refreshUrl,
   } = options;
+
+  const mac = new qiniu.auth.digest.Mac(accessKey, secretKey);
 
   return new Promise((resolve, reject) => {
     const config = new qiniu.conf.Config();
     const resumeUploader = new qiniu.resume_up.ResumeUploader(config);
     const putExtra = new qiniu.resume_up.PutExtra();
-    const uploadToken = getUploadToken({
-      accessKey,
-      secretKey,
-      bucket,
-    }, key);
+    const uploadToken = getUploadToken(mac, bucket, key);
 
     //分片上传可指定 version 字段，v2 表示分片上传 v2 , 可自定义分片大小，此处设为 6MB
     putExtra.version = 'v2';
@@ -66,7 +58,24 @@ export const upload = (key: string, filePath: string, options: QiniuOptions, onP
       }
 
       if (respInfo.statusCode == 200 && respBody.key) {
-        resolve(`${formatDomain(domain)}${respBody.key}`);
+        const fileUrl = `${formatDomain(domain)}${respBody.key}`;
+
+        if (refreshUrl) {
+          const cdnManager = new qiniu.cdn.CdnManager(mac);
+          const urlsToRefresh = [
+            encodeURI(fileUrl),
+          ];
+          cdnManager.refreshUrls(urlsToRefresh, (err: any, respBody: any, respInfo: any) => {
+            if (err) {
+              reject(err);
+            }
+            if (respInfo.statusCode === 200) {
+              resolve(fileUrl);
+            }
+          });
+        } else {
+          resolve(fileUrl);
+        }
       } else {
         reject(respInfo);
       }

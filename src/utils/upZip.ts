@@ -33,14 +33,14 @@ export default async (api: IApi, qiniuOptions: QiniuOptions, pluginOptions: UmiP
 
     const spinner = ora.default(`上传 ${fileName}: 0%`).start();
 
-    await upload(key, res as string, qiniuOptions, (percent: string) => {
+    const fileUrl = await upload(key, res as string, qiniuOptions, (percent: string) => {
       const temp = Number(percent) * 100;
       
       spinner.text = `上传 ${fileName}.zip: ${temp}%`;
     });
 
     spinner.succeed(`${fileName}.zip 上传成功`);
-    api.logger.info('🎉 压缩文件上传成功');
+    api.logger.info(`🎉 压缩文件上传成功${qiniuOptions.refreshUrl ? '，且已刷新该文件的 CDN 链接：' + fileUrl : ''}`);
     fs.unlink(res as string, (err) => {
       if (err) {
         throw err;

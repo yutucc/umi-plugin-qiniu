@@ -19,8 +19,9 @@ const defaultConfigOptions: UmiPluginQiniuOptions = {
     secretKey: '',
     bucket: '',
 
-    directory: '',
     domain: '',
+    directory: '',
+    refreshUrl: false,
   },
   options: {
     outputPath: 'dist',

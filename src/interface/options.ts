@@ -13,7 +13,8 @@ export interface QiniuAuth {
 }
 export interface QiniuOptions extends QiniuAuth {
   domain: string // 资源域名
-  directory?: string // 上传到七牛云的目录
+  directory?: string; // 上传到七牛云的目录
+  refreshUrl?: boolean; // true：上传完后，刷新文件；
 }
 
 interface Archive {
