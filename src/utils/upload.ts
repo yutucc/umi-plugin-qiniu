@@ -65,11 +65,11 @@ export const upload = (key: string, filePath: string, options: QiniuOptions, onP
           const urlsToRefresh = [
             encodeURI(fileUrl),
           ];
-          cdnManager.refreshUrls(urlsToRefresh, (err: any, respBody: any, respInfo: any) => {
+          cdnManager.refreshUrls(urlsToRefresh, (err: any, refreshRespBody: any, refreshRespInfo: any) => {
             if (err) {
               reject(err);
             }
-            if (respInfo.statusCode === 200) {
+            if (refreshRespInfo.statusCode === 200) {
               resolve(fileUrl);
             }
           });

@@ -40,7 +40,7 @@ export default async (api: IApi, qiniuOptions: QiniuOptions, pluginOptions: UmiP
     });
 
     spinner.succeed(`${fileName}.zip 上传成功`);
-    api.logger.info(`🎉 压缩文件上传成功${qiniuOptions.refreshUrl ? '，且已刷新该文件的 CDN 链接：' + fileUrl : ''}`);
+    api.logger.info(`🎉 压缩文件上传成功${qiniuOptions.refreshUrl ? '，且已刷新该文件的CDN链接：' + fileUrl : ''}`);
     fs.unlink(res as string, (err) => {
       if (err) {
         throw err;
